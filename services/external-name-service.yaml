@@ -55,7 +55,7 @@ metadata:
   labels:
     name:  random-quote-api
 spec:
-  replicas: 1
+  replicas: 2 
   selector:
     matchLabels:
       name: random-quote-api

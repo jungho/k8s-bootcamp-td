@@ -84,6 +84,14 @@ kubectl auth can-i create pods --namespace kube-system
 kubectl auth can-i get configmaps --namespace kube-system --as system:serviceaccount:kube-system:default
 ```
 
+### Service Accounts ###
+
+Your Pods can also have identity.  This is necessary if your containers need to access the API server and you want to control what that container process can do via RBAC.  This identity is represented by the ServiceAccount resource.  ServiceAccounts are namespaced resources, hence the full name for a given service account is `system:serviceaccount:NAMESPACE:NAME`.  When the Pod executes, the containers in the Pod executes as the identity represented by the ServiceAccount.  You can bind RBAC permissions to this ServiceAccount - this is relevant when it comes to accessing the API Server; you can also leverage a Kubernetes service called [SubjectAccessReview API](https://kubernetes.io/docs/reference/access-authn-authz/authorization/) to verify whether a given process can access other Kubernetes components (e.g. the kubelet).
+
+By default, each Pod gets a default service account within the namespace it is deployed to.  You can also create you own ServiceAccounts to have more granular control.  When a ServiceAccount is created, regardless of whether it is a default account or custom, this triggers the creation of a secret.  This secret is a token (a JWT token) and it used when accessing the API server.
+
+See [service-account.yaml](./service-account.yaml) for an example of creating a ServiceAccount and using it from a Pod.
+
 ## Pod Security Policies ##
 
 PodSecurityPolicy (PSP) resources enable the cluster admin to specify security contraints cluster wide for all pods.  In order for a Pod to be deployed onto the cluster, the pod template must meet the requirements specified in the PSP.  Note the policy is enforced at deployment time, not at runtime.  
